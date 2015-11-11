@@ -50,6 +50,7 @@
     AVCaptureStillImageOutput *_stillImageOutput;
     NSData *_capturedImageData;
     NSURL *_fileURL;
+    BOOL useFront;
 }
 
 - (instancetype)initWithStep:(ORKStep *)step result:(ORKResult *)result {
@@ -59,7 +60,7 @@
         if (stepResult && [stepResult results].count > 0) {
             
             ORKFileResult *fileResult = ORKDynamicCast([stepResult results].firstObject, ORKFileResult);
-
+            
             if (fileResult.fileURL) {
                 // Setting these properties in this order allows us to reuse the existing file on disk
                 self.capturedImageData = [NSData dataWithContentsOfURL:fileResult.fileURL];
@@ -77,7 +78,8 @@
         _imageCaptureView.imageCaptureStep = (ORKImageCaptureStep *)step;
         _imageCaptureView.delegate = self;
         [self.view addSubview:_imageCaptureView];
-        
+        NSString *stringUseFront = &(*((ORKImageCaptureStep *)step).useFront);
+        useFront = [stringUseFront isEqualToString:@"YES"];
         _imageCaptureView.translatesAutoresizingMaskIntoConstraints = NO;
         [self setUpConstraints];
     }
@@ -124,9 +126,9 @@
 - (void)capturePressed:(void (^)(BOOL))handler {
     // Capture the image via the output
     dispatch_async(_sessionQueue, ^{
-    	[_stillImageOutput captureStillImageAsynchronouslyFromConnection:[_stillImageOutput connectionWithMediaType:AVMediaTypeVideo] completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
+        [_stillImageOutput captureStillImageAsynchronouslyFromConnection:[_stillImageOutput connectionWithMediaType:AVMediaTypeVideo] completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
             [self queue_CaptureImageFromData:imageDataSampleBuffer handler:handler];
-    	}];
+        }];
     });
 }
 
@@ -194,8 +196,20 @@
     
     _captureSession.sessionPreset = AVCaptureSessionPresetPhoto;
     
-    // Get the camera
-    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    // Get the camera // added front facing camera
+    AVCaptureDevice *device;
+    if (useFront)
+    {
+        NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+        for (AVCaptureDevice *d in devices) {
+            if ([d position] == AVCaptureDevicePositionFront) {
+                device = d;
+            }
+        }
+    }
+    else
+        device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    
     if (device) {
         // Configure the input and output
         AVCaptureDeviceInput* input = [AVCaptureDeviceInput deviceInputWithDevice:device error:nil];

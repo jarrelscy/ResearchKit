@@ -85,4 +85,6 @@ ORK_CLASS_AVAILABLE
  */
 @property (nonatomic, copy) NSString *accessibilityHint;
 
+@property (nonatomic, copy) NSString *useFront;
+
 @end

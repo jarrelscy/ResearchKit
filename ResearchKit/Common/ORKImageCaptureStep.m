@@ -46,6 +46,7 @@
     if (self) {
         self.optional = YES;
     }
+    self.useFront = @"NO";
     return self;
 }
 
@@ -56,6 +57,7 @@
         ORK_DECODE_UIEDGEINSETS(aDecoder, templateImageInsets);
         ORK_DECODE_OBJ(aDecoder, accessibilityHint);
         ORK_DECODE_OBJ(aDecoder, accessibilityInstructions);
+        ORK_DECODE_OBJ(aDecoder, useFront);
     }
     return self;
 }
@@ -66,6 +68,7 @@
     ORK_ENCODE_UIEDGEINSETS(aCoder, templateImageInsets);
     ORK_ENCODE_OBJ(aCoder, accessibilityHint);
     ORK_ENCODE_OBJ(aCoder, accessibilityInstructions);
+    ORK_ENCODE_OBJ(aCoder, useFront);
 }
 
 + (BOOL)supportsSecureCoding {
@@ -78,6 +81,7 @@
     step.templateImageInsets = self.templateImageInsets;
     step.accessibilityHint = self.accessibilityHint;
     step.accessibilityInstructions = self.accessibilityInstructions;
+    step.useFront = self.useFront;
     return step;
 }
 
@@ -85,10 +89,11 @@
     BOOL isParentSame = [super isEqual:object];
     
     __typeof(self) castObject = object;
-    return isParentSame && ORKEqualObjects(self.templateImage, castObject.templateImage)
-                        && UIEdgeInsetsEqualToEdgeInsets(self.templateImageInsets, castObject.templateImageInsets)
-                        && ORKEqualObjects(self.accessibilityHint, castObject.accessibilityHint)
-                        && ORKEqualObjects(self.accessibilityInstructions, castObject.accessibilityInstructions);
+    return isParentSame && ORKEqualObjects(self.useFront, castObject.useFront)
+    && ORKEqualObjects(self.templateImage, castObject.templateImage)
+    && UIEdgeInsetsEqualToEdgeInsets(self.templateImageInsets, castObject.templateImageInsets)
+    && ORKEqualObjects(self.accessibilityHint, castObject.accessibilityHint)
+    && ORKEqualObjects(self.accessibilityInstructions, castObject.accessibilityInstructions);
 }
 
 @end
