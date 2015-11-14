@@ -1,3 +1,8 @@
+Custom version of ResearchKit Framework
+==========
+Added useFront var to ORKImageStep - currently if you use "YES" it will switch to front facing camera
+Plan to add buttons and button text through the useFront variable. 
+
 ResearchKit Framework
 ===========
 
